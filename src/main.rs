@@ -1,18 +1,15 @@
 mod game;
 
-use std::fs::OpenOptions;
-use std::io::{self, BufRead, Write};
+use std::io::{self, BufRead};
 
 use clap::Parser;
+use game::{Promotion, Square};
 
 use crate::game::Position;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
-struct Args {
-    #[clap(short, long)]
-    log: String,
-}
+struct Args {}
 
 use vampirc_uci::{self as uci, UciMessage};
 
@@ -23,12 +20,6 @@ struct Options {
 
 fn main() {
     let args = Args::parse();
-
-    let mut log = OpenOptions::new()
-        .write(true)
-        .create(true)
-        .open(&args.log)
-        .unwrap();
 
     let mut options = Options::default();
 
@@ -42,8 +33,6 @@ fn main() {
         match line {
             Ok(line) => {
                 for msg in uci::parse_with_unknown(&line) {
-                    writeln!(log, "{:?}", msg).unwrap();
-
                     match msg {
                         UciMessage::Uci => {
                             println!(
@@ -59,11 +48,6 @@ fn main() {
                                     match value.as_ref().and_then(|x| x.parse::<usize>().ok()) {
                                         Some(x) => Some(x),
                                         None => {
-                                            writeln!(
-                                                log,
-                                                "Warning: Failed to parse hash value: {:?}",
-                                                value
-                                            );
                                             continue;
                                         }
                                     }
@@ -82,10 +66,16 @@ fn main() {
                             if startpos {
                                 position = Position::starting()
                             }
-                            writeln!(log, "this is position: {:?}", position).unwrap();
+                            for m in moves {
+                                let from: Square = m.from.try_into().unwrap();
+                                let to: Square = m.to.try_into().unwrap();
+                                let promotion: Option<Promotion> =
+                                    m.promotion.map(|x| x.try_into().unwrap());
+                                position.ply(from, to, promotion).unwrap();
+                            }
                         }
                         UciMessage::UciNewGame => {
-                            writeln!(log, "options: {:?}", options).unwrap();
+                            println!("info string {:?}", options);
                         }
                         UciMessage::Go {
                             time_control,
