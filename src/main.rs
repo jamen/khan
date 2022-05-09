@@ -1,15 +1,19 @@
 mod game;
+mod logger;
 
 use std::io::{self, BufRead};
 
 use clap::Parser;
-use game::{Promotion, Square};
+use game::{Piece, Square};
+use log::{Level, LevelFilter};
 
 use crate::game::Position;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
-struct Args {}
+struct Args {
+    log_level: Option<String>,
+}
 
 use vampirc_uci::{self as uci, UciMessage};
 
@@ -19,6 +23,8 @@ struct Options {
 }
 
 fn main() {
+    logger::init(LevelFilter::Trace);
+
     let args = Args::parse();
 
     let mut options = Options::default();
@@ -57,25 +63,28 @@ fn main() {
                         UciMessage::IsReady => {
                             println!("readyok")
                         }
-                        UciMessage::Quit => return,
+                        UciMessage::Quit => {
+                            log::info!("Goodbye!");
+                            return;
+                        }
                         UciMessage::Position {
                             startpos,
                             fen,
-                            moves,
+                            moves: halfmoves,
                         } => {
                             if startpos {
                                 position = Position::starting()
                             }
-                            for m in moves {
+                            for m in halfmoves {
                                 let from: Square = m.from.try_into().unwrap();
                                 let to: Square = m.to.try_into().unwrap();
-                                let promotion: Option<Promotion> =
+                                let promotion: Option<Piece> =
                                     m.promotion.map(|x| x.try_into().unwrap());
-                                position.ply(from, to, promotion).unwrap();
+                                position.halfmove(from, to, promotion).unwrap();
                             }
                         }
                         UciMessage::UciNewGame => {
-                            println!("info string {:?}", options);
+                            log::info!("{:?}", options);
                         }
                         UciMessage::Go {
                             time_control,
@@ -88,7 +97,7 @@ fn main() {
                 }
             }
             Err(err) => {
-                println!("info string Error occured: {:?}", err);
+                log::error!("{:?}", err);
                 return;
             }
         }
