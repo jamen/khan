@@ -2,7 +2,7 @@
 name = "khan"
 version = "0.1.0"
 edition = "2021"
-description = "Experimental chess engine"
+description = "Chess engine experiment"
 readme = "readme.md"
 license = "Zlib"
 

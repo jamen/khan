@@ -105,7 +105,7 @@ impl Square {
         let file = if file <= 7 { file } else { return None };
         let index = rank * 8 + file;
         Some(
-            // SAFETY: Above we have checked the integers are in range.
+            // SAFETY: Checked above
             unsafe { mem::transmute::<u8, Square>(index) },
         )
     }
