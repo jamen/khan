@@ -4,9 +4,7 @@ use bitflags::bitflags;
 use vampirc_uci::{UciPiece, UciSquare};
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum PositionError {
-    InvalidMove,
-}
+pub struct IllegalMoveError;
 
 #[derive(Default, Debug)]
 pub struct Position {
@@ -40,7 +38,7 @@ impl Position {
         from: Square,
         to: Square,
         promotion: Option<Piece>,
-    ) -> Result<(), PositionError> {
+    ) -> Result<(), IllegalMoveError> {
         for (i, piece_square) in self.pieces.iter_mut().enumerate() {
             if *piece_square == Some(from) {
                 *piece_square = Some(to);
@@ -54,7 +52,7 @@ impl Position {
                         self.promotions[i] = Some(promotion);
                         break;
                     } else {
-                        return Err(PositionError::InvalidMove);
+                        return Err(IllegalMoveError);
                     }
                 }
             }

@@ -1,10 +1,10 @@
 # khan
 
-A UCI chess engine experiment in Rust
+Experimental UCI chess engine in Rust
 
-It uses [`vampric_uci`] for parsing messages from a chess interface. I've been testing with [CuteChess] and [Scid vs. PC](http://scidvspc.sourceforge.net/) (open to suggestions for a good chess interface)
+I've been testing with the [CuteChess] and [Scid vs. PC](http://scidvspc.sourceforge.net/) interfaces (open to suggestions for a good interface)
 
-AI is WIP. Currently it plays d4 then loses by illegal move :D
+AI is WIP. I would like to try retrograde analysis of attacking lines and use a Markov decision process.
 
 [`vampric_uci`]: https://github.com/vampirc/vampirc-uci
 [CuteChess]: https://github.com/cutechess/cutechess
