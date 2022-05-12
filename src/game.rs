@@ -147,9 +147,6 @@ pub enum Piece {
     King,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct TryIntoPromotionError;
-
 impl From<UciPiece> for Piece {
     fn from(x: UciPiece) -> Self {
         match x {
