@@ -102,10 +102,9 @@ impl Square {
         let rank = if rank <= 7 { rank } else { return None };
         let file = if file <= 7 { file } else { return None };
         let index = rank * 8 + file;
-        Some(
-            // SAFETY: Checked above
-            unsafe { mem::transmute::<u8, Square>(index) },
-        )
+        // SAFETY: The above makes this transmute always valid.
+        let square = unsafe { mem::transmute::<u8, Square>(index) };
+        Some(square)
     }
 
     // Zero-indexed rank
