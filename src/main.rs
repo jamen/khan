@@ -1,5 +1,6 @@
 mod game;
 mod logger;
+mod bitboard;
 
 use std::io::{self, BufRead};
 
